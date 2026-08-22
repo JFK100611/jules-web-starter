@@ -80,6 +80,7 @@ src/
   pages/                 eine Datei = eine Route
   styles/global.css      Tailwind-Import + Marken-Tokens
 public/                  wird unverändert ausgeliefert (Bilder, favicon, .nojekyll)
+scripts/deploy.mjs       veröffentlicht dist/ auf dem Branch gh-pages
 docs/decisions/          warum der Stack so ist, wie er ist
 ```
 

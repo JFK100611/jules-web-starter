@@ -27,21 +27,39 @@ error: failed to push some refs to 'https://github.com/JFK100611/jules-web-start
 
 ## Entscheidung
 
-Deploy vorerst clientseitig über das npm-Paket `gh-pages`:
+Deploy vorerst clientseitig über ein eigenes Script:
 
 ```
-npm run deploy    # = astro build && gh-pages -d dist --dotfiles
+npm run deploy    # = astro build && node scripts/deploy.mjs
 ```
 
-Das baut nach `dist/` und pusht den Ordnerinhalt als Commit auf den Branch
-`gh-pages`. GitHub Pages ist auf diesen Branch konfiguriert (Quelle: Branch,
-nicht Actions) und veröffentlicht ihn.
+`scripts/deploy.mjs` kopiert `dist/` in ein temporäres Repo, committet und
+pusht es auf den Branch `gh-pages`. GitHub Pages ist auf diesen Branch
+konfiguriert (Quelle: Branch, nicht Actions) und veröffentlicht ihn.
+`gh-pages` ist dabei ein reiner Artefakt-Branch: er wird bei jedem Deploy neu
+geschrieben, nicht fortgeschrieben. Der Quellstand steckt in `main`.
 
-`--dotfiles` ist erforderlich, damit `.nojekyll` mitgeht. Ohne diese Datei
-ignoriert der Jekyll-Vorprozessor von GitHub Pages den Ordner `_astro/` — die
-Seite lädt dann ohne CSS.
+`public/.nojekyll` muss mit ausgeliefert werden. Ohne diese Datei ignoriert der
+Jekyll-Vorprozessor von GitHub Pages den Ordner `_astro/` — die Seite lädt dann
+ohne CSS, ohne dass der Deploy fehlschlägt.
 
 ## Verworfene Alternativen
+
+**Das npm-Paket `gh-pages`.** Der Standardweg, zuerst eingebaut und wieder
+entfernt. Es legt seinen Cache-Clone unterhalb von `node_modules/` an; in tief
+liegenden Arbeitsverzeichnissen überschreitet das unter Windows das
+Pfadlängenlimit und der Deploy bricht ab:
+
+```
+fatal: cannot stat '.../node_modules/.cache/gh-pages/https!github.com!JFK100611!
+jules-web-starter.git/.git/hooks/applypatch-msg.sample': Filename too long
+```
+
+Behebbar wäre das mit `git config --global core.longpaths true` — ein
+Setup-Schritt auf jedem Rechner, den niemand dokumentiert findet, bis der Deploy
+scheitert. Das widerspricht der Vorgabe „Dev-Umgebung, die ohne Zusatzerklärung
+startet". Das eigene Script ist 50 Zeilen, hat keine Abhängigkeit und keine
+versteckte Voraussetzung.
 
 **Auf Scope-Erweiterung warten und Issue blockieren.** Verworfen: Das Issue
 verlangt einen einmal *echt durchgeführten* Deploy. Ein blockiertes Issue mit
