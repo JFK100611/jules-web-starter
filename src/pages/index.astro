@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+
+const stack = [
+  ['Sprache', 'TypeScript'],
+  ['Framework', 'Astro 7 (statisch)'],
+  ['Styling', 'Tailwind CSS 4'],
+  ['Datenhaltung', 'keine per Default'],
+  ['Hosting', 'GitHub Pages'],
+  ['Kosten', '0 €/Monat'],
+];
+
+const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+---
+
+<Base
+  title="Jules Corp — Projektgrundlage"
+  description="Technische Basis für Web-Auftragsentwicklung bei Jules Corp. Astro, TypeScript, Tailwind, statisches Hosting."
+>
+  <main class="mx-auto max-w-2xl px-6 py-20">
+    <p
+      class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700"
+    >
+      <span class="size-2 rounded-full bg-brand-500"></span>
+      Deploy läuft
+    </p>
+
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      Jules Corp — technische Projektgrundlage
+    </h1>
+
+    <p class="mt-5 text-lg leading-relaxed text-muted">
+      Diese Seite ist der Beweis, dass der Deploy-Weg funktioniert. Sie wurde aus
+      diesem Repository gebaut und automatisch veröffentlicht. Neue Projekte
+      starten von hier: klonen, <code class="rounded bg-brand-50 px-1.5 py-0.5 text-[0.9em] text-brand-700"
+        >npm install</code
+      >, <code class="rounded bg-brand-50 px-1.5 py-0.5 text-[0.9em] text-brand-700"
+        >npm run dev</code
+      >.
+    </p>
+
+    <dl class="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-xl bg-brand-100 sm:grid-cols-2">
+      {
+        stack.map(([label, value]) => (
+          <div class="bg-white px-5 py-4">
+            <dt class="text-xs font-medium tracking-wide text-muted uppercase">{label}</dt>
+            <dd class="mt-1 font-medium">{value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <footer class="mt-12 border-t border-brand-100 pt-6 text-sm text-muted">
+      <p>Build: {buildTime} UTC · Jules Corp</p>
+    </footer>
+  </main>
+</Base>
