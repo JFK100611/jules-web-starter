@@ -26,14 +26,33 @@ if (!existsSync(DIST)) {
 
 const remote = run(process.cwd(), 'remote', 'get-url', 'origin');
 const sha = run(process.cwd(), 'rev-parse', '--short', 'HEAD');
+
+// Ohne Git-Identitaet scheitert der Commit im Staging-Repo mit einer Meldung,
+// die nicht nach der eigentlichen Ursache aussieht. Lieber hier abfangen.
+const identity = (key) => {
+  try {
+    return run(process.cwd(), 'config', key);
+  } catch {
+    return '';
+  }
+};
+const userName = identity('user.name');
+const userEmail = identity('user.email');
+if (!userName || !userEmail) {
+  console.error('Fehler: keine Git-Identitaet gesetzt. Einmalig einrichten:');
+  console.error('  git config --global user.name "Vorname Nachname"');
+  console.error('  git config --global user.email "adresse@example.com"');
+  process.exit(1);
+}
+
 const staging = mkdtempSync(join(tmpdir(), 'deploy-'));
 
 try {
   cpSync(DIST, staging, { recursive: true });
 
   run(staging, 'init', '-q', '-b', BRANCH);
-  run(staging, 'config', 'user.name', run(process.cwd(), 'config', 'user.name'));
-  run(staging, 'config', 'user.email', run(process.cwd(), 'config', 'user.email'));
+  run(staging, 'config', 'user.name', userName);
+  run(staging, 'config', 'user.email', userEmail);
   run(staging, 'add', '-A');
   run(staging, 'commit', '-q', '-m', `deploy: build aus main@${sha}`);
 
@@ -44,7 +63,7 @@ try {
     .replace(/^git@github\.com:/, 'https://github.com/')
     .replace(/\.git$/, '')
     .replace(/^https:\/\/github\.com\/([^/]+)\/(.+)$/, 'https://$1.github.io/$2/');
-  console.log(`Fertig. In ca. 30-60 Sekunden erreichbar: ${page}`);
+  console.log(`Gepusht. GitHub Pages braucht danach 1-3 Minuten: ${page}`);
 } catch (error) {
   console.error('Deploy fehlgeschlagen:');
   console.error(error.stderr?.toString().trim() || error.message);

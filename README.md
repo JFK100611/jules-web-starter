@@ -42,7 +42,8 @@ npm run deploy
 ```
 
 Baut nach `dist/` und pusht das Ergebnis auf den Branch `gh-pages`, den GitHub
-Pages ausliefert. Nach ca. 30–60 Sekunden ist die neue Fassung online.
+Pages ausliefert. Der Push dauert Sekunden, bis GitHub die neue Fassung
+ausliefert vergehen erfahrungsgemäß 1–3 Minuten.
 
 Der Deploy läuft derzeit vom Entwicklungsrechner, nicht in CI. Grund und
 geplante Ablösung: [`docs/decisions/0002-deploy-weg.md`](docs/decisions/0002-deploy-weg.md).
